@@ -10,7 +10,7 @@ import useShowToast from '../hooks/useShowToast'
 const UserHeader = ({ user }) => {                                //we are seeing the profile of this user
   const toast = useToast()                                        //for popping up in bottom
   const currentUser = useRecoilValue(userAtom)                      //logged in user
-  const [following, setFollowing] = useState(user.followers.includes(currentUser._id));        //jiski profile khole ho waha pe jaa rhe hai . aur ye dekh rhe ki ky ham usko follow kar rhe hai ki nhi . agar kar rhe honge to uski followers ki list me to ham honge hi     
+  const [following, setFollowing] = useState(user.followers.includes(currentUser?._id));        //jiski profile khole ho waha pe jaa rhe hai . aur ye dekh rhe ki ky ham usko follow kar rhe hai ki nhi . agar kar rhe honge to uski followers ki list me to ham honge hi     
   console.log(following)
   const [updating,setUpdating]=useState(false)
 
@@ -57,7 +57,7 @@ const UserHeader = ({ user }) => {                                //we are seein
 
       }else{
         showToast("Success", `Followed ${user.name}`, "success")
-        user.followers.push(currentUser._id)
+        user.followers.push(currentUser?._id)
 
       }
       console.log(data)
@@ -103,12 +103,12 @@ const UserHeader = ({ user }) => {                                //we are seein
       </Flex>
       <Text>{user.bio}</Text>
 
-      {currentUser._id === user._id && (
+      {currentUser?._id === user._id && (
         <Link to="/update">
           <Button size={"sm"}>Update Profile</Button>
         </Link>
       )}
-      {currentUser._id !== user._id && (
+      {currentUser?._id !== user._id && (
 
         <Button size={"sm"} onClick={handleFollowUnfollow} isLoading={updating}> {following ? "Unfollow" : "Follow"}</Button>
 

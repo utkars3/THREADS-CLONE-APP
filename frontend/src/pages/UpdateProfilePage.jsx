@@ -8,11 +8,8 @@ import {
     Stack,
     useColorModeValue,
     Avatar,
-    AvatarBadge,
-    IconButton,
     Center,
 } from '@chakra-ui/react';
-import { SmallCloseIcon } from '@chakra-ui/icons';
 import { useRef, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import userAtom from '../atoms/userAtom';

@@ -1,9 +1,11 @@
 import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
+import {v2 as cloudinary} from 'cloudinary';
 
 export const createPost=async(req,res)=>{
     try {
-        const {postedBy,text,img}=req.body;
+        const {postedBy,text}=req.body;
+        let {img}=req.body;
 
         if(!postedBy || !text){
         return res.status(400).json({error:"PostedBy and text fields are required"})
@@ -21,6 +23,14 @@ export const createPost=async(req,res)=>{
         const maxLength=500;
         if(text.length>maxLength){
         return res.status(400).json({error:`Text must be less than ${maxLength} characters`})
+        }
+
+        if(img){
+            
+            
+
+            const uploadedResponse=await cloudinary.uploader.upload(img);
+            img=uploadedResponse.secure_url;             
         }
 
         const newPost=new Post({postedBy,text,img});
@@ -80,7 +90,7 @@ export const likeUnlikePost=async(req,res)=>{
 
        if(userLikedPost){
             //unlike post
-            await post.updateOne({_id:postId},{$pull:{likes:userId}})
+            await Post.updateOne({_id:postId},{$pull:{likes:userId}})
             return res.status(200).json({message:"Post unliked successfully"})       //401 for unauthorized
 
 
@@ -91,18 +101,15 @@ export const likeUnlikePost=async(req,res)=>{
             // console.log(post);
             return res.status(200).json({message:"Post liked successfully"})       //401 for unauthorized
 
-       }
-        
-
-
-
-        
+       }   
 
     } catch (error) {
         console.log(error)
         return res.status(500).json({error:error.message})
     }
 }
+
+
 
 export const replyToPost = async (req, res) => {
 	try {
@@ -151,18 +158,18 @@ export const getFeedPosts = async (req, res) => {
 	}
 };
 
-// const getUserPosts = async (req, res) => {
-// 	const { username } = req.params;
-// 	try {
-// 		const user = await User.findOne({ username });
-// 		if (!user) {
-// 			return res.status(404).json({ error: "User not found" });
-// 		}
+export const getUserPosts = async (req, res) => {
+	const { username } = req.params;
+	try {
+		const user = await User.findOne({ username });
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
 
-// 		const posts = await Post.find({ postedBy: user._id }).sort({ createdAt: -1 });
+		const posts = await Post.find({ postedBy: user._id }).sort({ createdAt: -1 });
 
-// 		res.status(200).json(posts);
-// 	} catch (error) {
-// 		res.status(500).json({ error: error.message });
-// 	}
-// };
+		res.status(200).json(posts);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};

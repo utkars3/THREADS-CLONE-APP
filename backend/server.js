@@ -22,7 +22,7 @@ cloudinary.config({                                             //cloudinary con
   });
 
 
-app.use(express.json());            //it allows to parse incoming data from request body
+app.use(express.json({limit:"50mb"}));            //it allows to parse incoming data from request body, kyuki ye image ko jaida payload bata rha tha isiliye limit badha die hai
 app.use(express.urlencoded({extended:false}))           //url encoded is used to parse form data in the req.body 
 app.use(cookieParser())                             //get cookie from request and send cookie inside response
 

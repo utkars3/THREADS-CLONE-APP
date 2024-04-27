@@ -24,7 +24,10 @@ import userAtom from '../atoms/userAtom';
   export default function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
     const setAuthScreen=useSetRecoilState(authScreenAtom);          //for updating state
+  const [loading,setLoading]=useState(false)
+
     const [inputs,setInputs]=useState({                             //for storing current values of username and password in login
+
       username:"",
       password:""
   })
@@ -34,7 +37,9 @@ import userAtom from '../atoms/userAtom';
 
     //for handling the login when a user click on login button
       const handleLogin=async()=>{
+        setLoading(true);
 try { 
+
   const res=await fetch("/api/users/login",{
     method:"POST",
     headers:{
@@ -54,6 +59,8 @@ try {
   console.log(data)
 } catch (error) {
   showToast("Error",error,"error")
+}finally{
+  setLoading(false)
 }
       }
     return (
@@ -100,14 +107,15 @@ try {
               </FormControl>
               <Stack spacing={10} pt={2}>
                 <Button
-                  loadingText="Submitting"
+                  loadingText="Logging in"
                   size="lg"
                   bg={useColorModeValue("gray.600","gray.700")}
                   color={'white'}
                   _hover={{
                     bg: useColorModeValue("gray.700","gray.800"),
                   }}
-                  onClick={handleLogin}>
+                  onClick={handleLogin}
+                  isLoading={loading}>
                   Login
                 </Button>
               </Stack>
