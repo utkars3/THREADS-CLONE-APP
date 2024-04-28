@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import {v2 as cloudinary} from 'cloudinary';
 
 export const createPost=async(req,res)=>{
+    
     try {
         const {postedBy,text}=req.body;
         let {img}=req.body;
@@ -27,15 +28,13 @@ export const createPost=async(req,res)=>{
 
         if(img){
             
-            
-
             const uploadedResponse=await cloudinary.uploader.upload(img);
             img=uploadedResponse.secure_url;             
         }
 
         const newPost=new Post({postedBy,text,img});
         await newPost.save();
-        return res.status(201).json({message:`Post created successfully`,newPost})
+        return res.status(201).json(newPost)
 
     } catch (error) {
         console.log(error)
@@ -49,7 +48,7 @@ export const getPost=async(req,res)=>{
         if(!post){
         return res.status(400).json({error:"Post Not found"})
         }
-        return res.status(200).json({post})
+        return res.status(200).json(post)
 
     } catch (error) {
         console.log(error)
@@ -60,6 +59,7 @@ export const getPost=async(req,res)=>{
 export const deletePost=async(req,res)=>{
     try {
         const post=await Post.findById(req.params.id)
+        
         if(!post){
         return res.status(400).json({error:"Post Not found"})
         }
@@ -67,6 +67,10 @@ export const deletePost=async(req,res)=>{
         if(post.postedBy.toString()!==req.user._id.toString()){
         return res.status(401).json({error:"Unauthorized to delete post"})       //401 for unauthorized
 
+        }
+       
+        if(post.img){
+           const value= await cloudinary.uploader.destroy(post.img.split("/").pop().split(".")[0])       //for removing the old image from cloudinary
         }
 
         await Post.findByIdAndDelete(req.params.id);

@@ -45,6 +45,7 @@ import userAtom from '../atoms/userAtom';
                 body:JSON.stringify(inputs)                     //jaiga string form me aaiga string form me . use karne ke liye ham json me kar lete hai convert
             })
             const data=await res.json();
+          
             if(data.error){
                 showToast("Error",data.error,"error")
                 return 

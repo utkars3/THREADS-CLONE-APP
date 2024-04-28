@@ -3,9 +3,11 @@ import { Button, CloseButton, Flex, FormControl, Image, Input, Modal, ModalBody,
 import React, { useRef, useState } from 'react'
 import usePreviewImg from '../hooks/usePreviewImg'
 import { BsFillImageFill } from 'react-icons/bs'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import userAtom from '../atoms/userAtom'
 import useShowToast from '../hooks/useShowToast'
+import postsAtom from '../atoms/postsAtom'
+import { useParams } from 'react-router-dom'
 
 const MAX_CHAR = 500;
 
@@ -18,6 +20,8 @@ const CreatePost = () => {
   const user = useRecoilValue(userAtom)
   const showToast = useShowToast();
   const [loading,setLoading]=useState(false)
+  const [posts,setPosts]=useRecoilState(postsAtom)
+  const {username}=useParams()
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -48,6 +52,10 @@ const CreatePost = () => {
   
       }
       showToast("Success", "Post created successfully", "success")
+      if(username===user.username){           //kyuki jab ham kisi aur ke page pe hai aur post add kare to waha pe mat dikhana 
+
+        setPosts([data,...posts])
+      }
       onClose()
       setPostText("")
       setImgUrl("")
@@ -61,7 +69,9 @@ const CreatePost = () => {
   }
   return (
     <>
-      <Button position={"fixed"} bottom={10} right={10} leftIcon={<AddIcon />} bg={useColorModeValue("gray.300", "gray.dark")} onClick={onOpen}>Post</Button>
+      <Button position={"fixed"} bottom={10} right={5} size={{
+        base:"sm",sm:"md"
+      }}  bg={useColorModeValue("gray.300", "gray.dark")} onClick={onOpen}><AddIcon /></Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
 

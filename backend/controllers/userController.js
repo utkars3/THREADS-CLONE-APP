@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js";
 import {v2 as cloudinary} from 'cloudinary';
 import mongoose from "mongoose";
+import Post from "../models/postModel.js";
 
 
 
@@ -35,6 +36,7 @@ export const getUserProfile=async(req,res)=>{
 }
 //signup user
 export const signupUser = async (req, res) => {
+   
     try {
         const { name, email, username, password } = req.body       //we are able to get all these because of express.json middlewares
         const user = await User.findOne({ $or: [{ email }, { username }] });   //username ya email match kia to
@@ -58,8 +60,8 @@ export const signupUser = async (req, res) => {
                 name: newUser.name,
                 email: newUser.email,
                 username: newUser.username,
-                 bio:user.bio,
-                profilePic:user.profilePic,
+                // bio:"",
+                // profilePic:user.profilePic,
             })
         } else {
             return res.status(400).json({ error: "invalid user data" })
@@ -74,7 +76,7 @@ export const signupUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         const { username, password } = req.body
-        console.log(password)
+       
         const user = await User.findOne({ username })
 
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "")    //because if user not exists.how we can compare password thats why question mark.also question mark will return null and bcrypt cannot compare with null so in case of null we have provided empty strring
@@ -182,6 +184,18 @@ export const updateUser = async (req, res) => {
             user.bio = bio || user.bio
 
             user = await user.save();
+
+            //find all posts that this user replied and update username and  userprofilepics fields
+            await Post.updateMany(
+                {"replies.userId":userId},
+                {
+                    $set:{
+                        "replies.$[reply].username":user.username,
+                        "replies.$[reply].userProfilePic":user.profilePic
+                    }
+                },
+                {arrayFilters:[{"reply.userId":userId}]}
+            )
 
             //password should be null in response
             user.password=null;

@@ -11,7 +11,7 @@ const UserHeader = ({ user }) => {                                //we are seein
   const toast = useToast()                                        //for popping up in bottom
   const currentUser = useRecoilValue(userAtom)                      //logged in user
   const [following, setFollowing] = useState(user.followers.includes(currentUser?._id));        //jiski profile khole ho waha pe jaa rhe hai . aur ye dekh rhe ki ky ham usko follow kar rhe hai ki nhi . agar kar rhe honge to uski followers ki list me to ham honge hi     
-  console.log(following)
+ 
   const [updating,setUpdating]=useState(false)
 
   const showToast = useShowToast();
@@ -60,7 +60,7 @@ const UserHeader = ({ user }) => {                                //we are seein
         user.followers.push(currentUser?._id)
 
       }
-      console.log(data)
+  
       setFollowing(!following)
 
     } catch (error) {

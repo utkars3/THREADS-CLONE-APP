@@ -56,7 +56,7 @@ try {
   setUser(data);
 
 
-  console.log(data)
+
 } catch (error) {
   showToast("Error",error,"error")
 }finally{
